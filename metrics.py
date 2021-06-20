@@ -39,7 +39,7 @@ def get_scoring_function(name: str, **params):
     mapping = {
         _mae(): make_scorer(mean_absolute_error, greater_is_better=False, **params),
         _f1(): make_scorer(f1_score, greater_is_better= True, **params),
-        _mse(): make_scorer(f1_score, greater_is_better= False, **params)
+        _mse(): make_scorer(mean_squared_error, greater_is_better= False, **params)
         
     }
     return mapping[name]
