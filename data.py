@@ -65,7 +65,7 @@ def _fix_data_frame_con(df):
     df['age_buckets'] = pd.cut(df['age'], bins=age_bins, labels=age_labels, right=True)
     dummie_age = pd.get_dummies(df['age_buckets'], columns='age_buckets')
     df = df.drop(['age','age_buckets'], axis=1)
-    df = pd.concat([dummie_age,df], axis=1)
+    df = pd.concat([df, dummie_age], axis=1)
     return df
 
 
