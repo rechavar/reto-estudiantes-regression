@@ -3,7 +3,7 @@ In this module we store functions to measuer the performance of our model.
 
 """
 
-from sklearn.metrics import mean_absolute_error, make_scorer, f1_score
+from sklearn.metrics import mean_absolute_error, make_scorer, f1_score, mean_squared_error
 import numpy as np
 
 
@@ -37,7 +37,9 @@ def get_metric_function(name: str, **params):
 def get_scoring_function(name: str, **params):
     mapping = {
         _mae(): make_scorer(mean_absolute_error, greater_is_better=False, **params),
-        _f1(): make_scorer(f1_score, greater_is_better= True, **params)
+        _f1(): make_scorer(f1_score, greater_is_better= True, **params),
+        _mse(): make_scorer(f1_score, greater_is_better= False, **params)
+        
     }
     return mapping[name]
 
@@ -50,4 +52,7 @@ def _f1():
 
 def _cm():
     return "custom prediction error"
+
+def _mse():
+    return "mean squared error"
 
