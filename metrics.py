@@ -10,6 +10,7 @@ import numpy as np
 def get_metric_name_mapping():
     return {
         _mae(): mean_absolute_error,
+        _mse(): mean_squared_error,
         _f1(): f1_score,
         _cm(): custom_error
     }
