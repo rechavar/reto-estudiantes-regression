@@ -100,7 +100,7 @@ def _param_grid_to_custom_format(param_grid):
         grid[estimator_name][param_name] = values
     result = grid
     result = [
-        {"name": name, "hparams": params} for name, params in grid.items()
+        {"name": name, "params": params} for name, params in grid.items()
     ]
     return result
 

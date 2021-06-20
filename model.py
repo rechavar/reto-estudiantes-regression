@@ -8,10 +8,10 @@ import pandas as pd
 from sklearn.base import BaseEstimator, RegressorMixin, TransformerMixin
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-from sklearn.linear_model import RandomForestRegressor, LogisticRegression
+from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, StandardScaler
-from sklearn.cluster import KMeans
+
 
 
 EstimatorConfig = t.List[t.Dict[str, t.Any]]
@@ -22,7 +22,7 @@ def build_estimator(config: EstimatorConfig):
     steps = []
     for step in config:
         name = step["name"]
-        hparams = step.get("hparams", {})
+        hparams = step.get("params", {})
         estimator = estimator_mapping[name](**hparams)
         steps.append((name, estimator))
     model = Pipeline(steps)
@@ -35,3 +35,19 @@ def get_estimator_mapping():
         "gradient-boost-regressor": GradientBoostingRegressor,
         "lineal_regression": LinearRegression
     }
+
+class AverageCostPerRegion(BaseEstimator, RegressorMixin):
+    def fit(self, X, y):
+        data_base = pd.concat(X, y, axis=1)
+        data_base = data_base[['smoker','region','y']]
+        data_smoker = data_base[data_base.smoker == 'yes']
+        self.means_smoker = data_smoker.groupby('region').mean().to_dict()['y']
+        data_non_smoker = data_base[data_base.smoker == 'no']
+        self.means_non_smoker = data_non_smoker.groupby('region').mean().to_dict()['y']
+        return self
+    
+    def predict(self, X):
+        if X.smoker == 'yes':
+            return self.means_smoker[X.region] 
+        else:
+            return self.means_non_smoker[X.region]

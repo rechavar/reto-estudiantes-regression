@@ -54,18 +54,18 @@ def _chain(functions: t.List[t.Callable[[pd.DataFrame], pd.DataFrame]]):
 def _fix_data_frame_cat(df):
     to_get_dummies_cols = get_categorical_column_names()
     df_cat_dummies = pd.get_dummies(df[to_get_dummies_cols], columns= to_get_dummies_cols)
-    df_cat_dummies
-
     continius_cols = get_numeric_column_names()
     
     return pd.concat([df[continius_cols], df_cat_dummies], axis = 1)
 
 def _fix_data_frame_con(df):
 
-    sc = StandardScaler()
-    cols_to_scale = ['thalachh', 'age', 'chol', 'trtbps']
-    df[cols_to_scale] = sc.fit_transform(df[cols_to_scale])
-
+    # age_bins = np.linspace(df['age'].min(),df['age'].max(),11)
+    # age_labels =['1','2','3','4','5','6','7','8','9','10']
+    # df['age_buckets'] = pd.cut(df['age'], bins=age_bins, labels=age_labels, right=False)
+    # dummie_age = pd.get_dummies(df['age_buckets'], columns='age_buckets')
+    # df.drop(['age','age_buckets'], axis=1)
+    # df = pd.concat([dummie_age,df], axis=1)
     return df
 
 
@@ -76,32 +76,30 @@ def _fix_unhandled_nulls(df):
 
 def get_categorical_column_names() -> t.List[str]:
      return (
-         "sex,cp,fbs,restecg,exng,slp,caa,thall"
+         "sex,smoker,region"
         
      ).split(",")
 
 
 def get_binary_column_names() -> t.List[str]:
-    return ("sex,cp,restecg,slp,thall,thall,fbs,exng").split(",")
+    return ("sex,smoker,region").split(",")
 
 
 def get_numeric_column_names() -> t.List[str]:
     return (
-        "age,trtbps,chol,thalachh,oldpeak"
+        "age,bmi,children"
     ).split(",")
 
 
 def get_column_names() -> t.List[str]:
     return (
-        "age,trtbps,chol,thalachh,oldpeak,sex,cp,restecg,slp,thall,thall,fbs,exng"
+        "age,sex,bmi,children,smoker,region"
     ).split(",")
 
 
 def get_categorical_variables_values_mapping() -> t.Dict[str, t.Sequence[str]]:
     return {
-        "cp": ("0","1","2","3"),
-        "restecg": ("0","1","2"),
-        "slp": ("0","1","2"),
-        "caa": ("0", "1", "2", "3"),
-        "thall": ("0", "1","2","3"),
+        "sex": ("female","male"),
+        "smoker": ("no","yes"),
+        "region": ("northeast","southwest","northwest","southeast"),
          }
