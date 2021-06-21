@@ -63,14 +63,14 @@ def _chain(functions: t.List[t.Callable[[pd.DataFrame], pd.DataFrame]]):
     return helper
 
 def _add_new_features_h1(df):
-    df['new_feature_1'] = np.where(df['smoker_yes']== 1, 1, np.where(df['bmi'] >= 25, 1, 0))
+    df['new_feature_1'] = np.where(df['smoker']== 1, 1, np.where(df['bmi'] >= 25, 1, 0))
     
     return df
 
-def _add_new_features_h1(df):
-    df = _add_new_features_h1(df)
+#def _add_new_features_h1(df):
+    #df = _add_new_features(df)
 
-    df['new_feature_chol_vobs'] = ((df.chol - df.chol.min())/df.chol.max()) * abs(df.caa - 3)
+    
 
     return df
 
