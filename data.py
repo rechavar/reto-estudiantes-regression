@@ -19,9 +19,10 @@ class DatasetReader(te.Protocol):
 SplitName = te.Literal["train", "test"]
 
 
-def get_dataset(reader: DatasetReader, splits: t.Iterable[SplitName]):
+def get_dataset(reader: DatasetReader, splits: t.Iterable[SplitName], stage: str ):
     df_orginal = reader()
-    df = clean_dataset(df_orginal)
+    clean_functions = get_stage()
+    df = clean_functions[stage](df_orginal.drop("y", axis = 1))
     y = df_orginal["y"]
     X = df
     X_train, X_test, y_train, y_test = train_test_split(
@@ -41,6 +42,17 @@ def clean_dataset(df: pd.DataFrame) -> pd.DataFrame:
     df = cleaning_fn(df)
     return df
 
+def clean_dataset_h1(df: pd.DataFrame) -> pd.DataFrame:
+    cleaning_fn = _chain(
+        [
+             _add_new_features_h1,
+             _fix_data_frame_cat,
+             _fix_data_frame_con
+
+        ]
+    )
+    df = cleaning_fn(df)
+    return df
 
 def _chain(functions: t.List[t.Callable[[pd.DataFrame], pd.DataFrame]]):
     def helper(df):
@@ -50,6 +62,17 @@ def _chain(functions: t.List[t.Callable[[pd.DataFrame], pd.DataFrame]]):
 
     return helper
 
+def _add_new_features_h1(df):
+    df['new_feature_1'] = np.where(df['smoker_yes']== 1, 1, np.where(df['bmi'] >= 25, 1, 0))
+    
+    return df
+
+def _add_new_features_h1(df):
+    df = _add_new_features_h1(df)
+
+    df['new_feature_chol_vobs'] = ((df.chol - df.chol.min())/df.chol.max()) * abs(df.caa - 3)
+
+    return df
 
 def _fix_data_frame_cat(df):
     to_get_dummies_cols = get_categorical_column_names()
@@ -103,3 +126,11 @@ def get_categorical_variables_values_mapping() -> t.Dict[str, t.Sequence[str]]:
         "smoker": ("no","yes"),
         "region": ("northeast","southwest","northwest","southeast"),
          }
+
+def get_stage()-> t.Dict[str, t.Sequence[str]]:
+    return{
+        "h_0" : clean_dataset,
+        "h_1" : clean_dataset_h1,
+        #"h_2" : clean_dataset_h2,
+        #"h_3" : clean_dataset_h3,
+    }

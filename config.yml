@@ -3,9 +3,9 @@ estimator:
   - name: lineal_regression
     params: {}
 
-
-      
-
+stage:
+  name: h_0
+  
 data:
   filepath: ./dataset/train_regression.csv
 
