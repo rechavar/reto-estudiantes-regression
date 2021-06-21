@@ -2,10 +2,6 @@ estimator:
 
   - name: lineal_regression
     params: {}
-
-
-      
-
 data:
   filepath: ./dataset/train_regression.csv
 
