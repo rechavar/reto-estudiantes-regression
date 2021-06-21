@@ -26,18 +26,19 @@ app = typer.Typer()
 @app.command()
 def train(config_file: str):
     estimator_config = _load_config(config_file, "estimator")
+    stage = _load_config(config_file, "stage")['name']
     split = "train"
-    X, y = _get_dataset(_load_config(config_file, "data"), splits=[split])[split]
+    X, y = _get_dataset(_load_config(config_file, "data"), splits=[split], stage = stage)[split]
     estimator = model.build_estimator(estimator_config)
     estimator.fit(X, y)
     output_dir = _load_config(config_file, "export")["output_dir"]
     version = _save_versioned_estimator(estimator, estimator_config, output_dir)
 
 
-def _get_dataset(data_config, splits):
+def _get_dataset(data_config, splits, stage):
     filepath = data_config["filepath"]
     reader = partial(pd.read_csv, filepath_or_buffer=filepath)
-    return data.get_dataset(reader=reader, splits=splits)
+    return data.get_dataset(reader=reader, splits=splits, stage = stage)
 
 
 def _save_versioned_estimator(
@@ -61,6 +62,7 @@ def find_hyperparams(
 ):
     search_config = _load_config(config_file, "search")
     param_grid = search_config["grid"]
+    stage = _load_config(config_file, "stage")['name']
     n_jobs = search_config["jobs"]
     metric = _load_config(config_file, "metrics")[0]
     estimator_config = _load_config(config_file, "estimator")
@@ -74,7 +76,7 @@ def find_hyperparams(
         verbose=3,
     )
     split = "train"
-    X, y = _get_dataset(_load_config(config_file, "data"), splits=[split])[split]
+    X, y = _get_dataset(_load_config(config_file, "data"), splits=[split], stage= stage)[split]
     gs.fit(X, y)
     estimator_config = _param_grid_to_custom_format(gs.best_params_)
     estimator = gs.best_estimator_
@@ -112,9 +114,10 @@ def eval(
     splits: t.List[str] = ["test"],
 ):
     output_dir = _load_config(config_file, "export")["output_dir"]
+    stage = _load_config(config_file, "stage")['name']
     saved_model = os.path.join(output_dir, model_version, "model.joblib")
     estimator = joblib.load(saved_model)
-    dataset = _get_dataset(_load_config(config_file, "data"), splits=splits)
+    dataset = _get_dataset(_load_config(config_file, "data"), splits=splits, stage= stage)
     report = defaultdict(list)
     all_metrics = _load_config(config_file, "metrics")
     for name, (X, y) in dataset.items():

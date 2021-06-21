@@ -141,6 +141,10 @@ def get_stage()-> t.Dict[str, t.Sequence[str]]:
     return{
         "h_0" : clean_dataset,
         "h_1" : clean_dataset_h1,
+<<<<<<< HEAD
         "h_2" : clean_dataset_h2,
+=======
+        #"h_2" : clean_dataset_h2,
+>>>>>>> 6f9fc89ef79b6f99e911d901ddb1577122e0850e
         #"h_3" : clean_dataset_h3,
     }
