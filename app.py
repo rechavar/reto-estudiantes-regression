@@ -76,7 +76,7 @@ def find_hyperparams(
         verbose=3,
     )
     split = "train"
-    X, y = _get_dataset(_load_config(config_file, "data", stage= stage), splits=[split])[split]
+    X, y = _get_dataset(_load_config(config_file, "data"), splits=[split], stage= stage)[split]
     gs.fit(X, y)
     estimator_config = _param_grid_to_custom_format(gs.best_params_)
     estimator = gs.best_estimator_
@@ -117,7 +117,7 @@ def eval(
     stage = _load_config(config_file, "stage")['name']
     saved_model = os.path.join(output_dir, model_version, "model.joblib")
     estimator = joblib.load(saved_model)
-    dataset = _get_dataset(_load_config(config_file, "data", stage= stage), splits=splits)
+    dataset = _get_dataset(_load_config(config_file, "data"), splits=splits, stage= stage)
     report = defaultdict(list)
     all_metrics = _load_config(config_file, "metrics")
     for name, (X, y) in dataset.items():
